@@ -4,9 +4,9 @@ name: Build React
 
 on: 
     push:
-        branches: ["codigo_unido"]
+        branches: ["main"]
     pull_request:
-        branches: ["codigo_unido"]
+        branches: ["main"]
 
 jobs: 
     build_test:
