@@ -51,6 +51,30 @@ Este repositorio contiene la implementación del backend, que incluye:
 
 ---
 
+## Tecnologías
+
+### Backend
+
+- **.NET 9 SDK** - Framework principal para la API
+- **Entity Framework Core** - ORM para manejo de base de datos
+- **JWT (JSON Web Tokens)** - Sistema de autenticación
+- **BCrypt** - Encriptación de contraseñas
+- **MySQL** - Base de datos relacional
+- **Docker** - Contenedorización de la aplicación
+
+### Frontend
+
+- **React** - Framework de JavaScript
+- **Node.js** - Entorno de ejecución para JavaScript
+- **npm** - Gestor de paquetes
+
+### DevOps
+
+- **GitHub Actions** - CI/CD para automatización de despliegues
+- **Docker** - Contenedorización y despliegue
+
+---
+
 ## Instalación
 
 ### Requisitos previos
