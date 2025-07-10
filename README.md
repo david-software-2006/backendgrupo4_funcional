@@ -6,11 +6,6 @@ ExtraHours.API es una aplicación completa para la gestión de horas extra en em
 
 La aplicación cuenta con un sistema de autenticación JWT robusto y manejo de roles (Admin, Employee, Manager), proporcionando diferentes niveles de acceso según el tipo de usuario.
 
-### Estructura del proyecto 
-
-![alt text](/fronted/public/image.png)
-
-
 #### Desarrollado por Grupo 4
 
 ---
