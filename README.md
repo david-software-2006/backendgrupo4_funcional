@@ -10,6 +10,37 @@ La aplicación cuenta con un sistema de autenticación JWT robusto y manejo de r
 
 ---
 
+# Proyecto Principal
+
+Este repositorio es una unión de otros proyectos. A continuación, se enumeran los repositorios base que contribuyeron a este trabajo:
+
+## Repositorios Base
+
+### Frontend del Proyecto Base
+[Frontend del Proyecto Base](https://stackblitz.com/edit/vitejs-vite-pmnhntdf)
+
+Este repositorio contiene la implementación del frontend utilizando Vite.js. Incluye componentes clave que son reutilizables y modularizados, facilitando el mantenimiento y la escalabilidad del código. La aplicación está diseñada con un enfoque en la usabilidad, asegurando que los usuarios puedan navegar de manera intuitiva y con una interfaz atractiva. 
+
+Además, cuenta con un diseño interactivo y fácil de usar, cumpliendo con las necesidades del proyecto y facilitando una experiencia de usuario dinámica y responsiva. Se han implementado funcionalidades como:
+
+- **Navegación fluida**: Utilizando rutas que permiten una transición rápida entre diferentes vistas.
+- **Accesibilidad**: Permite que la aplicación sea accesible para todos los usuarios.
+
+### Backend del Proyecto
+[Backend del Proyecto](https://github.com/Vero-nica22/backendgrupo4/tree/main?tab=readme-ov-file)
+
+Este repositorio contiene la implementación del backend, que incluye:
+
+- **APIs**: Definición de las rutas y lógica de negocio.
+- **Conexión a la Base de Datos**: Configuración y manejo de la base de datos.
+- **Tokens**: Implementación de la autenticación y gestión de tokens.
+- **Peticiones HTTP**: Manejo de solicitudes y respuestas entre el cliente y el servidor.
+- **Pruebas Unitarias**: Conjunto de pruebas para asegurar la funcionalidad del código.
+- **GitHub Actions**: Configuración para integración continua y despliegue.
+- **Docker**: Archivos necesarios para la contenedorización de la aplicación.
+
+---
+
 ## Tecnologías
 
 ### Backend
