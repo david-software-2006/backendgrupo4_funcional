@@ -1,3 +1,60 @@
+# version: "3.9"
+# services:
+#   backend:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile.dev
+#     volumes:
+#       - ./ExtraHours.API:/app/ExtraHours.API
+#       - ./ExtraHours.Tests:/app/ExtraHours.Tests
+#       - ./Models:/app/Models
+#       - ./Services:/app/Services
+#       - ./Repositories:/app/Repositories
+#       - ./Data:/app/Data
+#       - ./Migrations:/app/Migrations
+#       - ./DTOs:/app/DTOs
+#       - ./Program.cs:/app/Program.cs
+#       - ./appsettings.json:/app/appsettings.json
+#       - ./appsettings.Development.json:/app/appsettings.Development.json
+#       - /app/ExtraHours.API/bin
+#       - /app/ExtraHours.API/obj
+#     ports:
+#       - "5023:5023"
+#     environment:
+#       - ASPNETCORE_ENVIRONMENT=Development
+#     depends_on:
+#       - mysql
+#     command: >
+#       /bin/bash -c "dotnet ef database update --project /app/ExtraHours.API/ExtraHours.API.csproj --startup-project /app/ExtraHours.API/ExtraHours.API.csproj && dotnet watch --project /app/ExtraHours.API/ExtraHours.API.csproj run --urls=http://0.0.0.0:5023"
+
+#   mysql:
+#     image: mysql:8.0
+#     restart: always
+#     environment:
+#       MYSQL_ROOT_PASSWORD: 1234
+#       MYSQL_DATABASE: extrahours
+#     ports:
+#       - "3307:3306"
+#     volumes:
+#       - mysql_data:/var/lib/mysql
+
+#   frontend:
+#     build:
+#       context: ./fronted
+#       dockerfile: Dockerfile.dev
+#     volumes:
+#       - ./fronted:/app
+#       - /app/node_modules
+#     ports:
+#       - "5173:5173"
+#     environment:
+#       - NODE_ENV=development
+#     depends_on:
+#       - backend
+
+# volumes:
+#   mysql_data:
+
 version: "3.9"
 services:
   backend:
@@ -23,7 +80,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy # ✅ Asegura que MySQL esté completamente listo y saludable
     command: >
       /bin/bash -c "dotnet ef database update --project /app/ExtraHours.API/ExtraHours.API.csproj --startup-project /app/ExtraHours.API/ExtraHours.API.csproj && dotnet watch --project /app/ExtraHours.API/ExtraHours.API.csproj run --urls=http://0.0.0.0:5023"
 
@@ -37,6 +95,21 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck: # ✅ Agregado: Comprobación de salud para MySQL
+      test: [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p1234",
+        ] # Usa la misma contraseña que en environment
+      interval: 5s # Frecuencia de la comprobación
+      timeout: 20s # Tiempo máximo para que la comprobación responda
+      retries: 10 # Número de reintentos antes de considerar el servicio "no saludable"
+      start_period: 30s # Tiempo para que el contenedor se inicie antes de que comiencen las comprobaciones
 
   frontend:
     build:
