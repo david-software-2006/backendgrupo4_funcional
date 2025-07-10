@@ -23,7 +23,7 @@ Este repositorio es una unión de otros proyectos. A continuación, se enumeran 
   - **Accesibilidad**: Permite que la aplicación sea accesible para todos los usuarios.
 
 - [Backend del Proyecto](https://github.com/Vero-nica22/backendgrupo4/tree/main?tab=readme-ov-file): Este repositorio contiene la implementación del backend, que incluye:
-- 
+ 
   - **APIs**: Definición de las rutas y lógica de negocio.
   - **Conexión a la Base de Datos**: Configuración y manejo de la base de datos.
   - **Tokens**: Implementación de la autenticación y gestión de tokens.
