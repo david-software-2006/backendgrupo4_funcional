@@ -24,6 +24,10 @@ const Departments = () => {
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
+  // Modal de eliminación
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [departmentToDelete, setDepartmentToDelete] = useState(null);
+
   useEffect(() => {
     fetchDepartments();
   }, []);
@@ -87,20 +91,33 @@ const Departments = () => {
     }
   };
 
-  const handleDeleteDepartment = async (id) => {
-    if (
-      window.confirm("¿Estás seguro de que quieres eliminar este departamento?")
-    ) {
-      try {
-        await axios.delete(`http://localhost:5023/api/departments/${id}`);
-        setDepartments(
-          departments.filter((department) => department.id !== id)
-        );
-      } catch (err) {
-        console.error(err);
-        setError("No se pudo eliminar el departamento.");
-      }
+  // Cambiado: ahora solo abre el modal
+  const handleDeleteDepartment = (id) => {
+    setDepartmentToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  // Confirmar eliminación desde el modal
+  const confirmDeleteDepartment = async () => {
+    if (!departmentToDelete) return;
+    try {
+      await axios.delete(`http://localhost:5023/api/departments/${departmentToDelete}`);
+      setDepartments(
+        departments.filter((department) => department.id !== departmentToDelete)
+      );
+      setShowDeleteModal(false);
+      setDepartmentToDelete(null);
+    } catch (err) {
+      console.error(err);
+      setError("No se pudo eliminar el departamento.");
+      setShowDeleteModal(false);
+      setDepartmentToDelete(null);
     }
+  };
+
+  const cancelDeleteDepartment = () => {
+    setShowDeleteModal(false);
+    setDepartmentToDelete(null);
   };
 
   const handleEditDepartment = (department) => {
@@ -204,7 +221,7 @@ const Departments = () => {
   );
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 bg-white text-gray-900"> {/* Cambiado bg-gray-100 a bg-white */}
+    <div className="min-h-screen p-4 sm:p-6 bg-white text-gray-900">
       <div className="max-w-7xl mx-auto">
         {showForm && (
           <>
@@ -244,7 +261,7 @@ const Departments = () => {
           <div className="flex flex-col h-full">
             {showForm && renderDepartmentForm()}
 
-           <div className={`${showForm ? 'mt-4' : 'mt-8'} p-6 rounded bg-white min-h-[calc(100vh-200px)]`}> {/* Añadido min-h */}
+            <div className={`${showForm ? 'mt-4' : 'mt-8'} p-6 rounded bg-white min-h-[calc(100vh-200px)]`}>
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">
@@ -336,6 +353,36 @@ const Departments = () => {
             </div>
           </div>
         )}
+
+        {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
+        {showDeleteModal && (
+          <div className="fixed left-0 right-0 bottom-0 w-full h-full bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/3">
+              <h2 className="text-xl font-semibold mb-4 flex items-center text-gray-900">
+                <XCircle className="text-red-500 mr-2" size={24} />
+                Confirmar eliminación
+              </h2>
+              <p className="mb-6 text-gray-800">
+                ¿Estás seguro de que deseas eliminar este departamento? Esta acción no se puede deshacer.
+              </p>
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={cancelDeleteDepartment}
+                  className="px-4 py-2 rounded-md font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmDeleteDepartment}
+                  className="px-4 py-2 rounded-md font-medium transition-colors bg-red-600 text-white hover:bg-red-700"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

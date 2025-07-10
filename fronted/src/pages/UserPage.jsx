@@ -827,6 +827,7 @@ const fetchUserName = async (userId) => {
                   <ul className="text-sm text-blue-700 space-y-1">
                     <li>• <strong>Máximo 2 horas extras por día</strong> (sin importar el tipo)</li>
                     <li>• <strong>Máximo 12 horas extras por semana</strong></li>
+                     <li>• <strong>Horas normales:</strong> 6:00 am - 9:00 pm (recargo diurno)</li>
                     <li>• <strong>Horas nocturnas:</strong> 9:00 pm - 6:00 am (recargo nocturno)</li>
                     <li>• <strong>Horas festivas:</strong> Todo el día en días festivos (recargo festivo)</li>
                     <li>• <strong>Horas dominicales:</strong> Todo el día en domingos (recargo dominical)</li>
