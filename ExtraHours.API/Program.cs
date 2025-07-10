@@ -115,81 +115,85 @@ builder.Services.Configure<FormOptions>(options =>
 
 var app = builder.Build();
 
+// 🧪 Carga inicial de datos
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    try
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    if (!context.Departments.Any(d => d.Name == "Administración"))
+        context.Departments.Add(new Department { Name = "Administración", Employees = 0, Status = "Activo" });
+
+    if (!context.Departments.Any(d => d.Name == "Ventas"))
+        context.Departments.Add(new Department { Name = "Ventas", Employees = 0, Status = "Activo" });
+
+    context.SaveChanges();
+
+    var administracion = context.Departments.FirstOrDefault(d => d.Name == "Administración");
+    var ventas = context.Departments.FirstOrDefault(d => d.Name == "Ventas");
+
+    if (administracion == null || ventas == null)
+        throw new Exception("No se pudieron obtener los departamentos requeridos.");
+
+    if (!context.Users.Any(u => u.Email == "admin@ejemplo.com"))
     {
-        var context = services.GetRequiredService<AppDbContext>();
-
-        // 🚀 Aplicar migraciones pendientes ANTES de intentar acceder a cualquier tabla
-        // Esto asegura que las tablas existan cuando intentas inicializar datos.
-        context.Database.Migrate();
-
-        // 🧪 Carga inicial de datos (Seed Data)
-        // Ahora puedes estar seguro de que las tablas como 'Departments' existen.
-        if (!context.Departments.Any(d => d.Name == "Administración"))
-            context.Departments.Add(new Department { Name = "Administración", Employees = 0, Status = "Activo" });
-
-        if (!context.Departments.Any(d => d.Name == "Ventas"))
-            context.Departments.Add(new Department { Name = "Ventas", Employees = 0, Status = "Activo" });
-
-        // Guarda los cambios después de añadir los departamentos si quieres consultarlos inmediatamente.
-        // A menudo es una buena práctica guardar todas las inicializaciones al final, pero para datos relacionales, 
-        // podrías necesitar guardar las entidades padre primero.
-        context.SaveChanges();
-
-        var administracion = context.Departments.FirstOrDefault(d => d.Name == "Administración");
-        var ventas = context.Departments.FirstOrDefault(d => d.Name == "Ventas");
-
-        if (administracion == null || ventas == null)
-            throw new Exception("No se pudieron obtener los departamentos requeridos para la inicialización de usuarios.");
-
-        if (!context.Users.Any(u => u.Email == "admin@ejemplo.com"))
+        context.Users.Add(new User
         {
-            context.Users.Add(new User
-            {
-                Username = "admin",
-                Email = "admin@ejemplo.com",
-                FirstName = "Administrador",
-                LastName = "Principal",
-                Role = UserRole.Admin,
-                Department = administracion,
-                Position = "Administrador General",
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123")
-            });
-        }
-
-        if (!context.Users.Any(u => u.Email == "empleado1@ejemplo.com"))
-        {
-            context.Users.Add(new User
-            {
-                Username = "empleado1",
-                Email = "empleado1@ejemplo.com",
-                FirstName = "Vero",
-                LastName = "Morante",
-                Role = UserRole.Employee,
-                Department = ventas,
-                Position = "Vendedora",
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("empleado123")
-            });
-        }
-
-        context.SaveChanges(); // Guarda todos los cambios al final de la inicialización
+            Username = "admin",
+            Email = "admin@ejemplo.com",
+            FirstName = "Administrador",
+            LastName = "Principal",
+            Role = UserRole.Admin,
+            Department = administracion,
+            Position = "Administrador General",
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123")
+        });
     }
-    catch (Exception ex)
+
+    if (!context.Users.Any(u => u.Email == "empleado1@ejemplo.com"))
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ocurrió un error al migrar o inicializar la base de datos.");
-        // Dependiendo de tu estrategia de despliegue, podrías querer re-lanzar la excepción
-        // o simplemente registrarla y dejar que la aplicación continúe si el error no es crítico para el inicio.
-        // Para la creación/inicialización de la base de datos, suele ser crítico.
-        throw; // Re-lanzar para asegurar que la aplicación falle si la configuración de la DB falla
+        context.Users.Add(new User
+        {
+            Username = "empleado1",
+            Email = "empleado1@ejemplo.com",
+            FirstName = "Vero",
+            LastName = "Morante",
+            Role = UserRole.Employee,
+            Department = ventas,
+            Position = "Vendedora",
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("empleado123")
+        });
     }
+
+    context.SaveChanges();
 }
+
+// 🚀 Middleware
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "ExtraHours API v1");
+        options.RoutePrefix = string.Empty;
+    });
+}
+
+app.UseHttpsRedirection();
+
+app.UseCors("AllowSpecificOrigin");
+
+app.UseAuthentication(); // ✅ Habilita autenticación
+app.UseAuthorization();  // ✅ Habilita autorización
+
+app.UseStaticFiles();
+
+
+app.MapControllers();
+
+app.Run();
